@@ -18,10 +18,10 @@ class State(BaseModel, Base):
                               cascade="all, delete-orphan")
 
     else:
-        @property
         def cities(self):
-            list_cities = []
-            for cities in models.storage.all(City).values():
-                if city.state_id == self.id:
-                    list_cities.append(cities)
-            return list_cities
+            """Getter method for cities
+            Return: list of cities with state_id equal to self.id
+            """
+            """Getter attribute in case of file storage"""
+            return [city for city in models.storage.all(City).values()
+                    if city.state_id == self.id]
