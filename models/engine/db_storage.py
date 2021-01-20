@@ -32,20 +32,26 @@ class DBStorage():
     def all(self, cls=None):
         """ Retrieve all in a Dict or depending of parameter class"""
 
-        if cls:
-            objs = self.__session.query(self.classes()[cls])
+        dictionary = {}
+        classes = [User, State, City, Amenity, Place, Review]
+
+        if cls is None:
+            _query = self.__session.query(User, State, City, Amenity,
+                                          Place, Review)
+
+            for obj in _query:
+                key_obj = ("{}.{}".format(obj.__class__.__name__, obj.id))
+                dictionary.update({key_obj: obj})
+            return dictionary
         else:
-            objs = self.__session.query(State).all()
-            objs += self.__session.query(City).all()
-            objs += self.__session.query(User).all()
-            objs += self.__session.query(Place).all()
-            objs += self.__session.query(Amenity).all()
-            objs += self.__session.query(Review).all()
-        dic = {}
-        for obj in objs:
-            k = '{}.{}'.format(type(obj).__name__, obj.id)
-            dic[k] = obj
-        return dic
+            if cls in classes:
+                _query = self.__session.query(cls).all()
+                for obj in _query:
+                    key_obj = ("{}.{}".format(obj.__class__.__name__, obj.id))
+                    dictionary.update({key_obj: obj})
+                return dictionary
+            else:
+                return {}
 
     def new(self, obj):
         """New object in database"""
@@ -67,3 +73,7 @@ class DBStorage():
                                       expire_on_commit=False)
         Session = scoped_session(self.__session)
         self.__session = Session()
+
+    def close(self):
+        """ Close session with the DB """
+        self.__session.close()
