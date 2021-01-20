@@ -18,6 +18,7 @@ class State(BaseModel, Base):
                               cascade="all, delete-orphan")
 
     else:
+        @property
         def cities(self):
             """Getter method for cities
             Return: list of cities with state_id equal to self.id
